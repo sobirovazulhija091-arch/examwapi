@@ -9,6 +9,5 @@ public interface IBookloanService
     Task<Response<string>> DeleteAsync(int bookloanid);
     Task<Response<Bookloan>> GetByIdAsync(int bookloanid); 
     Task<List<Bookloan>> GetAsync(); 
-
-
+    Task<Response<Bookloan>> ReturnAsync(int bookloanid);
 }

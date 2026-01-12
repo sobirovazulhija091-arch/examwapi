@@ -36,4 +36,9 @@ public class BookloanServiceControllers(IBookloanService bookloanService):Contro
     {
         return await bookloanService.UpdateAsync(bookloan);
     }
+    [HttpPut("return")]
+     public async Task<Response<Bookloan>> ReturnAsync(int bookloanid)
+    {
+        return await bookloanService.ReturnAsync(bookloanid);
+    }
 }

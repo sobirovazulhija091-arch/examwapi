@@ -10,5 +10,4 @@ public interface IBookService
     Task<Response<Book>> GetByIdAsync(int bookid); 
     Task<List<Book>> GetAsync(); 
 
-
 }

@@ -92,4 +92,13 @@ public class BookloanService(ApplicationDbContext dbContext) : IBookloanService
              return new Response<string>(HttpStatusCode.InternalServerError,"Internal Server Error");
          }
     }
+   public async Task<Response<Bookloan>> ReturnAsync(int bookloanid)
+    {
+           using var conn = context.Connection();
+             var query="update bookloans set returndate = @ReturnDate where id=@Id";
+            var res = await conn.ExecuteAsync(query, new { ReturnDate = DateTime.UtcNow, Id = bookloanid });
+             return res==0? new Response<Bookloan>(HttpStatusCode.NotFound,"Can not Found")
+              : new Response<Bookloan>(HttpStatusCode.OK,"Get successfull");
+         }
+
 }
