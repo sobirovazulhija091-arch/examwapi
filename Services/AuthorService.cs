@@ -1,6 +1,7 @@
 using ExamApi.Data;
 using System.Net;
 using ExamApi.Entites;
+using ExamApi.DTOs;
 using Dapper;
 // using Npgsql;
 using ExamApi.Interface;
@@ -10,22 +11,22 @@ namespace ExamApi.Services;
 public class AuthorService(ApplicationDbContext dbContext) : IAuthorService
 {
      private readonly ApplicationDbContext context = dbContext;
-    public async Task<Response<string>> AddAsync(Author author)
+    public async Task<Response<string>> AddAsync(AuthorDto author1)
     {
-         try
-         {
+            Author author = new Author
+           {
+            FullName=author1.FullName,
+               BirthDate=author1.BirthDate,
+               Country=author1.Country
+            };
+
              using var conn = context.Connection();
-             var query="insert into authors(fullname,birthdate,country) values(@fullname,@birthdate,@country)";
+             var query="insert into  authors(fullname,birthdate,country) values(@fullname,@birthdate,@country)";
              var res = await conn.ExecuteAsync(query,new{fullname=author.FullName,birthdate=author.BirthDate,country=author.Country});
              return res==0? new Response<string>(HttpStatusCode.InternalServerError,"Can not add")
               : new Response<string>(HttpStatusCode.OK,"Added successfull");
          }
-         catch (System.Exception ex)
-         {
-             Console.WriteLine(ex);
-             return new Response<string>(HttpStatusCode.InternalServerError,"Internal Server Error");
-         }
-    }
+    
 
     public async Task<Response<string>> DeleteAsync(int authorid)
     {
@@ -47,7 +48,7 @@ public class AuthorService(ApplicationDbContext dbContext) : IAuthorService
     public async Task<List<Author>> GetAsync()
     {
              using var conn = context.Connection();
-             var query="select * from authors where id=@authorid";
+             var query="select * from authors ";
              var res = await conn.QueryAsync<Author>(query);
              return  res.ToList();
     }
@@ -68,13 +69,12 @@ public class AuthorService(ApplicationDbContext dbContext) : IAuthorService
              return new Response<Author>(HttpStatusCode.InternalServerError,"Internal Server Error");
          }
     }
-
-    public async Task<Response<string>> UpdateAsync(Author author)
+    public async Task<Response<string>> UpdateAsync(UpdateAuthorDto author)
     {
          try
          {
              using var conn = context.Connection();
-             var query="update authors set fullname=@Fullname,birthdate=@Birthdate,country=@Country";
+             var query="update authors set fullname=@Fullname,birthdate=@Birthdate,country=@Country where id=@Id";
              var res = await conn.ExecuteAsync(query, author);
              return res==0? new Response<string>(HttpStatusCode.InternalServerError,"Can not update")
               : new Response<string>(HttpStatusCode.OK,"Update successfull");

@@ -4,6 +4,7 @@ using ExamApi.Interface;
 using ExamApi.Services;
 using ExamApi.Responses;
 using Microsoft.AspNetCore.Mvc;
+using ExamApi.DTOs;
 namespace ExamApi.Controller;
 
 [Route("api/[controller]")]
@@ -11,7 +12,7 @@ namespace ExamApi.Controller;
 public class UserServiceController(IUserService userService):ControllerBase
 {
     [HttpPost]
-     public async Task<Response<string>> AddAsync(User user)
+     public async Task<Response<string>> AddAsync(UserDto user)
     {
         return await userService.AddAsync(user);
     }

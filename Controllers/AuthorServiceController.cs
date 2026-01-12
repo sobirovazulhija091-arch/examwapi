@@ -3,18 +3,20 @@ using ExamApi.Entites;
 using ExamApi.Interface;
 using ExamApi.Services;
 using ExamApi.Responses;
+using ExamApi.DTOs;
 using Microsoft.AspNetCore.Mvc;
-namespace ExamApi.Controller;
-[Route("api/[controller]")]
-[ApiController]
+namespace ExamApi.Controllers;
 
-public class AuthorServiceController(IAuthorService authorService):ControllerBase
+[ApiController]
+[Route("api/[controller]")]
+public class AuthorServiceController(IAuthorService authorService): ControllerBase
 {
     [HttpPost]
-     public async Task<Response<string>> AddAsync(Author author)
+    public async Task<Response<string>> AddAsync(AuthorDto author)
     {
         return await authorService.AddAsync(author);
     }
+
     [HttpDelete]
      public async Task<Response<string>> DeleteAsync(int authorid)
     {
@@ -32,7 +34,7 @@ public class AuthorServiceController(IAuthorService authorService):ControllerBas
          return await authorService.GetByIdAsync(authorid);
     }
     [HttpPut]
-     public async Task<Response<string>> UpdateAsync(Author author)
+     public async Task<Response<string>> UpdateAsync(UpdateAuthorDto author)
     {
         return await authorService.UpdateAsync(author);
     }

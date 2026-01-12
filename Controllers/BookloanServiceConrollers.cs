@@ -4,6 +4,7 @@ using ExamApi.Interface;
 using ExamApi.Services;
 using ExamApi.Responses;
 using Microsoft.AspNetCore.Mvc;
+using ExamApi.DTOs;
 namespace ExamApi.Controller;
 
 [Route("api/[controller]")]
@@ -11,7 +12,7 @@ namespace ExamApi.Controller;
 public class BookloanServiceControllers(IBookloanService bookloanService):ControllerBase
 {
     [HttpPost]
-      public async Task<Response<string>> AddAsync(Bookloan bookloan)
+      public async Task<Response<string>> AddAsync(BookloanDto bookloan)
     {
         return await bookloanService.AddAsync(bookloan);
     }

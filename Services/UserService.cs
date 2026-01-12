@@ -5,16 +5,22 @@ using Dapper;
 using Npgsql;
 using ExamApi.Interface;
 using ExamApi.Responses;
+using ExamApi.DTOs;
 
 namespace ExamApi.Services;
 public class UserService(ApplicationDbContext dbContext) : IUserService
 {
      private readonly ApplicationDbContext context = dbContext;
 
-    public async Task<Response<string>> AddAsync(User user)
+    public async Task<Response<string>> AddAsync(UserDto user1)
     {
          try
          {
+            User user = new User
+            {
+              FullName=user1.FullName,
+              Email=user1.Email  
+            };
              using var conn = context.Connection();
              var query="insert into users(fullname,email,registeredat) values(@fullname,@email,@registeredat) ";
              var res = await conn.ExecuteAsync(query,new{fullname=user.FullName,email=user.Email,registeredat=user.RegisteredAt});

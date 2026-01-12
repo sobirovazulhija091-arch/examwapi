@@ -5,16 +5,24 @@ using Dapper;
 using Npgsql;
 using ExamApi.Interface;
 using ExamApi.Responses;
+using ExamApi.DTOs;
 
 namespace ExamApi.Services;
 public class BookService(ApplicationDbContext dbContext) : IBookService
 {
      private readonly ApplicationDbContext context = dbContext;
 
-    public async  Task<Response<string>> AddAsync(Book book)
+    public async  Task<Response<string>> AddAsync(BookDto book1)
     {
          try
          {
+            Book book = new Book
+            {
+               Title=book1.Title,
+               PublishedYear=book1.PublishedYear,
+               Genre=book1.Genre,
+               AuthorId=book1.AuthorId  
+            };
              using var conn = context.Connection();
              var query="insert into books(title,publishedyear,genre,authorid) values(@title,@publishedyear,@genre,@authorid) ";
              var res = await conn.ExecuteAsync(query,new{title=book.Title,publishedyear=book.PublishedYear,genre=book.Genre,authorid=book.AuthorId});

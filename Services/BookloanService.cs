@@ -5,19 +5,25 @@ using Dapper;
 using Npgsql;
 using ExamApi.Interface;
 using ExamApi.Responses;
+using ExamApi.DTOs;
 
 namespace ExamApi.Services;
 public class BookloanService(ApplicationDbContext dbContext) : IBookloanService
 {
      private readonly ApplicationDbContext context = dbContext;
 
-    public async Task<Response<string>> AddAsync(Bookloan bookloan)
+    public async Task<Response<string>> AddAsync(BookloanDto bookloan1)
     {
         try
          {
+            Bookloan bookloan = new Bookloan
+            {
+               UserId=bookloan1.UserId,
+               BookId=bookloan1.BookId  
+            };
              using var conn = context.Connection();
-             var query="insert into bookloans(bookid,userid,loandate,registeredat) values(@bookid,@userid,@loandate,@registeredat) ";
-             var res = await conn.ExecuteAsync(query,new{bookid=bookloan.BookId,userid=bookloan.UserId,loandate=bookloan.LoanDate,registeredat=bookloan.ReturnDate});
+             var query="insert into bookloans(bookid,userid,loandate,returndate) values(@bookid,@userid,@loandate,@returndate) ";
+             var res = await conn.ExecuteAsync(query,new{bookid=bookloan.BookId,userid=bookloan.UserId,loandate=bookloan.LoanDate,returndate=bookloan.ReturnDate});
              return res==0? new Response<string>(HttpStatusCode.InternalServerError,"Can not add")
               : new Response<string>(HttpStatusCode.OK,"Added successfull");
          }
@@ -48,7 +54,7 @@ public class BookloanService(ApplicationDbContext dbContext) : IBookloanService
     public async Task<List<Bookloan>> GetAsync()
     {
          using var conn = context.Connection();
-             var query="select * from users";
+             var query="select * from bookloans";
              var res = await conn.QueryAsync<Bookloan>(query);
              return  res.ToList();
     }

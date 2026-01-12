@@ -2,7 +2,8 @@ using ExamApi.Interface;
 using ExamApi.Data;
 using ExamApi.Responses;
 using ExamApi.Services;
-using ExamApi.Controller;
+using ExamApi.DTOs;
+using ExamApi.Controllers;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IAuthorService,AuthorService>();
 builder.Services.AddScoped<IBookService,BookService>();
@@ -22,4 +23,5 @@ if (app.Environment.IsDevelopment())
 }
 
    app.MapOpenApi();
+   app.MapControllers();
   app.Run();
