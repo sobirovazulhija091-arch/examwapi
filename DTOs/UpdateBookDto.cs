@@ -1,11 +1,11 @@
-using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
-namespace  ExamApi.DTOs;
-public class BookDto
+namespace ExamApi.DTOs;
+public class UpdateBookDto
 {
-  
     [Required]
-public string Title{get;set;}=null!;
+    public int Id{get;set;}
+    [Required]
+ public string Title{get;set;}=null!;
     [Required]
 public int PublishedYear{get;set;}
     [Required]

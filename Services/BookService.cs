@@ -78,14 +78,14 @@ public class BookService(ApplicationDbContext dbContext) : IBookService
          }
     }
 
-    public async Task<Response<string>> UpdateAsync(Book book)
+    public async Task<Response<string>> UpdateAsync(UpdateBookDto book)
     {
          try
          {
              using var conn = context.Connection();
-             var query="update books set title=@Title,publishedyear=@Publishedyear,genre=@Genre,authorid=@Authorid where id=@Id";
+             var query="update books set title = @Title,publishedyear = @Publishedyear,genre = @Genre, authorid = @Authorid where id = @Id";
              var res = await conn.ExecuteAsync(query, book);
-             return res==0? new Response<string>(HttpStatusCode.InternalServerError,"Can not update")
+             return res==0? new Response<string>(HttpStatusCode.NotFound,"Can not found id update")
               : new Response<string>(HttpStatusCode.OK,"Update successfull");
          }
          catch (System.Exception ex)

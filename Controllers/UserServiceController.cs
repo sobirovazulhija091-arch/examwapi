@@ -32,7 +32,7 @@ public class UserServiceController(IUserService userService):ControllerBase
       return await userService.GetByIdAsync(userid);   
     }
     [HttpPut]
-     public async Task<Response<string>> UpdateAsync(User user)
+     public async Task<Response<string>> UpdateAsync(UpdateUserDto user)
     {
         return await userService.UpdateAsync(user);
     }

@@ -32,7 +32,7 @@ public class BookloanServiceControllers(IBookloanService bookloanService):Contro
         return await bookloanService.GetByIdAsync(bookloanid);
     }
     [HttpPut]
-     public async Task<Response<string>> UpdateAsync(Bookloan bookloan)
+     public async Task<Response<string>> UpdateAsync(UpdateBookloanDto bookloan)
     {
         return await bookloanService.UpdateAsync(bookloan);
     }

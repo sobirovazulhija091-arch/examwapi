@@ -76,12 +76,12 @@ public class UserService(ApplicationDbContext dbContext) : IUserService
          }
     }
 
-    public async Task<Response<string>> UpdateAsync(User user)
+    public async Task<Response<string>> UpdateAsync(UpdateUserDto user)
     {
         try
          {
              using var conn = context.Connection();
-             var query="update users set fullname=Fullname,email=Email,registeredat=Registeredat";
+             var query="update users set fullname=Fullname,email=Email,registeredat=Registeredat where id=@Id";
              var res = await conn.ExecuteAsync(query, user);
              return res==0? new Response<string>(HttpStatusCode.InternalServerError,"Can not update")
               : new Response<string>(HttpStatusCode.OK,"Update successfull");

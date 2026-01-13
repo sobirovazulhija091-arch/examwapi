@@ -32,7 +32,7 @@ public class BookServiceController(IBookService  bookService):ControllerBase
         return await bookService.GetByIdAsync(bookid);
     }
     [HttpPut]
-    public async Task<Response<string>> UpdateAsync(Book book)
+    public async Task<Response<string>> UpdateAsync(UpdateBookDto book)
     {
         return await bookService.UpdateAsync(book);
     }
