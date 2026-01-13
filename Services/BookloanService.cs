@@ -78,8 +78,8 @@ public class BookloanService(ApplicationDbContext dbContext ,ILogger<Bookloan> _
          {
              using var conn = context.Connection();
              var query="select * from bookloans where id=@Bookloanid";
-             var res = await conn.QueryFirstOrDefaultAsync(query,new{Bookloanid=bookloanid});
-             if (res==0)
+             var res = await conn.QueryFirstOrDefaultAsync<Bookloan>(query,new{Bookloanid=bookloanid});
+             if (res==null)
              {
                 logger.LogWarning("Can not find  id");
                return new Response<Bookloan>(HttpStatusCode.NotFound,"Can not find");

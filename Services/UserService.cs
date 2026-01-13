@@ -8,8 +8,9 @@ using ExamApi.Responses;
 using ExamApi.DTOs;
 
 namespace ExamApi.Services;
-public class UserService(ApplicationDbContext dbContext) : IUserService
+public class UserService(ApplicationDbContext dbContext,ILogger<User> _logger) : IUserService
 {
+    private readonly ILogger<User> logger=_logger;
      private readonly ApplicationDbContext context = dbContext;
 
     public async Task<Response<string>> AddAsync(UserDto user1)
@@ -24,14 +25,21 @@ public class UserService(ApplicationDbContext dbContext) : IUserService
              using var conn = context.Connection();
              var query="insert into users(fullname,email,registeredat) values(@fullname,@email,@registeredat) ";
              var res = await conn.ExecuteAsync(query,new{fullname=user.FullName,email=user.Email,registeredat=user.RegisteredAt});
-             return res==0? new Response<string>(HttpStatusCode.InternalServerError,"Can not add")
-              : new Response<string>(HttpStatusCode.OK,"Added successfull");
+             if (res==0)
+             {
+                logger.LogWarning("Can not added");
+               return new Response<string>(HttpStatusCode.InternalServerError,"Can not added");
+             }
+             else
+             {
+               return new Response<string>(HttpStatusCode.OK,"Added successfull");  
+             }
          }
          catch (System.Exception ex)
-         {
-             Console.WriteLine(ex);
+            {
+              logger.LogError(ex.Message);
              return new Response<string>(HttpStatusCode.InternalServerError,"Internal Server Error");
-         }
+            }
     }
 
     public async Task<Response<string>> DeleteAsync(int userid)
@@ -41,14 +49,22 @@ public class UserService(ApplicationDbContext dbContext) : IUserService
              using var conn = context.Connection();
              var query="delete from users where id=@Userid";
              var res = await conn.ExecuteAsync(query,new{Userid=userid});
-             return res==0? new Response<string>(HttpStatusCode.InternalServerError,"Can not delete")
-              : new Response<string>(HttpStatusCode.OK,"Delete successfull");
-         }
-         catch (System.Exception ex)
-         {
-             Console.WriteLine(ex);
+             if (res==0)
+             {
+                logger.LogWarning("Can not delete author by id");
+               return new Response<string>(HttpStatusCode.InternalServerError,"Can not delete");
+             }
+             else
+             {
+              
+               return new Response<string>(HttpStatusCode.OK,"Delete successfull");  
+             }
+             }
+             catch (System.Exception ex)
+            {
+              logger.LogError(ex.Message);
              return new Response<string>(HttpStatusCode.InternalServerError,"Internal Server Error");
-         }
+            }
     }
 
     public async Task<List<User>> GetAsync()
@@ -65,13 +81,20 @@ public class UserService(ApplicationDbContext dbContext) : IUserService
          {
              using var conn = context.Connection();
              var query="select * from users where id=@Userid";
-             var res = await conn.QueryFirstOrDefaultAsync(query,new{Userid=userid});
-             return res==0? new Response<User>(HttpStatusCode.InternalServerError,"Can not Get")
-              : new Response<User>(HttpStatusCode.OK,"Get successfull",res);
+             var res = await conn.QueryFirstOrDefaultAsync<User>(query,new{Userid=userid});
+             if(res==null)
+             {
+                logger.LogWarning("Can not found id");
+                return  new Response<User>(HttpStatusCode.NotFound,"Can not found");
+            }
+             else
+            {
+                return new Response<User>(HttpStatusCode.OK,"Get successfull",res);
+            }        
          }
          catch (System.Exception ex)
          {
-             Console.WriteLine(ex);
+             logger.LogError(ex.Message);
              return new Response<User>(HttpStatusCode.InternalServerError,"Internal Server Error");
          }
     }
@@ -83,13 +106,20 @@ public class UserService(ApplicationDbContext dbContext) : IUserService
              using var conn = context.Connection();
              var query="update users set fullname=Fullname,email=Email,registeredat=Registeredat where id=@Id";
              var res = await conn.ExecuteAsync(query, user);
-             return res==0? new Response<string>(HttpStatusCode.InternalServerError,"Can not update")
-              : new Response<string>(HttpStatusCode.OK,"Update successfull");
-         }
-         catch (System.Exception ex)
-         {
-             Console.WriteLine(ex);
-             return new Response<string>(HttpStatusCode.InternalServerError,"Internal Server Error");
-         }
+             if (res==0)
+             {
+                logger.LogWarning("Can not update author by id");
+               return new Response<string>(HttpStatusCode.InternalServerError,"Can not update");
+             }
+             else
+             {
+               return new Response<string>(HttpStatusCode.OK,"Update successfull");  
+             }
+          }
+             catch (System.Exception ex)
+             {
+               logger.LogError(ex.Message);
+               return new Response<string>(HttpStatusCode.InternalServerError,"Internal Server Error");
+             }
     }
 }
