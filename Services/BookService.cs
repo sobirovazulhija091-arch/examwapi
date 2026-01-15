@@ -6,13 +6,11 @@ using Npgsql;
 using ExamApi.Interface;
 using ExamApi.Responses;
 using ExamApi.DTOs;
-
 namespace ExamApi.Services;
 public class BookService(ApplicationDbContext dbContext,ILogger<Book> _logger) : IBookService
 {
-    private readonly ILogger<Book> logger=_logger;
-     private readonly ApplicationDbContext context = dbContext;
-
+    private readonly ILogger<Book> logger = _logger;
+    private readonly ApplicationDbContext context = dbContext;
     public async  Task<Response<string>> AddAsync(BookDto book1)
     {
          try
@@ -43,7 +41,6 @@ public class BookService(ApplicationDbContext dbContext,ILogger<Book> _logger) :
              return new Response<string>(HttpStatusCode.InternalServerError,"Internal Server Error");
             }
     }
-
     public async Task<Response<string>> DeleteAsync(int bookid)
     {
         try
@@ -68,7 +65,6 @@ public class BookService(ApplicationDbContext dbContext,ILogger<Book> _logger) :
              return new Response<string>(HttpStatusCode.InternalServerError,"Internal Server Error");
             }
     }
-
     public  async Task<List<Book>> GetAsync()
     {
           using var conn = context.Connection();
@@ -76,9 +72,8 @@ public class BookService(ApplicationDbContext dbContext,ILogger<Book> _logger) :
              var res = await conn.QueryAsync<Book>(query);
              return  res.ToList();
     }
-
     public  async Task<Response<Book>> GetByIdAsync(int bookid)
-    {
+{
           try
          {
              using var conn = context.Connection();
@@ -99,8 +94,7 @@ public class BookService(ApplicationDbContext dbContext,ILogger<Book> _logger) :
              logger.LogError(ex.Message);
              return new Response<Book>(HttpStatusCode.InternalServerError,"Internal Server Error");
          }
-    }
-
+}
     public async Task<Response<string>> UpdateAsync(UpdateBookDto book)
     {
          try
@@ -125,4 +119,4 @@ public class BookService(ApplicationDbContext dbContext,ILogger<Book> _logger) :
              }
     }
 
-    }
+}

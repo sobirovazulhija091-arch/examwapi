@@ -10,8 +10,8 @@ namespace ExamApi.Services;
 
 public class AuthorService(ApplicationDbContext dbContext,ILogger<Author> _logger) : IAuthorService
 {
-     private readonly ILogger<Author> logger =_logger;
-     private readonly ApplicationDbContext context = dbContext;
+    private readonly ILogger<Author> logger = _logger;
+    private readonly ApplicationDbContext context = dbContext;
     public async Task<Response<string>> AddAsync(AuthorDto author1)
     {
             Author author = new Author

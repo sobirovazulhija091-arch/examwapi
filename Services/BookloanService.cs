@@ -10,8 +10,8 @@ using ExamApi.DTOs;
 namespace ExamApi.Services;
 public class BookloanService(ApplicationDbContext dbContext ,ILogger<Bookloan> _logger) : IBookloanService
 {
-     private readonly ApplicationDbContext context = dbContext;
-     private readonly ILogger<Bookloan> logger = _logger;
+    private readonly ApplicationDbContext context = dbContext;
+    private readonly ILogger<Bookloan> logger = _logger;
     public async Task<Response<string>> AddAsync(BookloanDto bookloan1)
     {
         Bookloan bookloan = new Bookloan

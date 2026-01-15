@@ -1,9 +1,7 @@
+using ExamApi.Middlewares;
 using ExamApi.Interface;
 using ExamApi.Data;
-using ExamApi.Responses;
 using ExamApi.Services;
-using ExamApi.DTOs;
-using ExamApi.Controllers;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IAuthorService,AuthorService>();
 builder.Services.AddScoped<IBookService,BookService>();
@@ -13,16 +11,16 @@ builder.Services.AddScoped<ApplicationDbContext>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddLogging(config=> {config.AddConsole();});
+builder.Services.AddLogging(config=> 
+ {config.AddConsole();});
 var app = builder.Build();
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-   app.MapOpenApi();
-   app.MapControllers();
+  app.MapOpenApi();
+  app.UseMiddleware<RequestTimeMiddleware>();
+  app.MapControllers();
   app.Run();

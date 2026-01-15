@@ -10,9 +10,8 @@ using ExamApi.DTOs;
 namespace ExamApi.Services;
 public class UserService(ApplicationDbContext dbContext,ILogger<User> _logger) : IUserService
 {
-    private readonly ILogger<User> logger=_logger;
-     private readonly ApplicationDbContext context = dbContext;
-
+    private readonly ILogger<User> logger = _logger;
+    private readonly ApplicationDbContext context = dbContext;
     public async Task<Response<string>> AddAsync(UserDto user1)
     {
          try
@@ -41,7 +40,6 @@ public class UserService(ApplicationDbContext dbContext,ILogger<User> _logger) :
              return new Response<string>(HttpStatusCode.InternalServerError,"Internal Server Error");
             }
     }
-
     public async Task<Response<string>> DeleteAsync(int userid)
     {
         try
@@ -66,7 +64,6 @@ public class UserService(ApplicationDbContext dbContext,ILogger<User> _logger) :
              return new Response<string>(HttpStatusCode.InternalServerError,"Internal Server Error");
             }
     }
-
     public async Task<List<User>> GetAsync()
     {
         using var conn = context.Connection();
@@ -74,7 +71,6 @@ public class UserService(ApplicationDbContext dbContext,ILogger<User> _logger) :
              var res = await conn.QueryAsync<User>(query);
              return  res.ToList();
     }
-
     public async Task<Response<User>> GetByIdAsync(int userid)
     {
         try
@@ -98,7 +94,6 @@ public class UserService(ApplicationDbContext dbContext,ILogger<User> _logger) :
              return new Response<User>(HttpStatusCode.InternalServerError,"Internal Server Error");
          }
     }
-
     public async Task<Response<string>> UpdateAsync(UpdateUserDto user)
     {
         try
