@@ -6,7 +6,8 @@ public class RequestTimeMiddleware(RequestDelegate next, ILogger<RequestTimeMidd
     private readonly ILogger<RequestTimeMiddleware> _logger = logger;
     public async Task InvokeAsync(HttpContext context)
     {
-        _logger.LogInformation(
+        _logger.LogInformation
+        (
             "Incoming request: {Method} {Path}",
             context.Request.Method,
             context.Request.Path
@@ -16,9 +17,9 @@ public class RequestTimeMiddleware(RequestDelegate next, ILogger<RequestTimeMidd
         {
             await _next(context);
         }
-        catch
+        catch(Exception ex)
         {
-            _logger.LogError("The request was not successfull");
+              _logger.LogError(ex, "Request failed");
         }
         var end = DateTime.Now;
         _logger.LogInformation("The request finished!");

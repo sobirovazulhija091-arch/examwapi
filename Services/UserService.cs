@@ -1,4 +1,4 @@
-using ExamApi.Data;
+
 using System.Net;
 using ExamApi.Entites;
 using Dapper;
@@ -6,6 +6,7 @@ using Npgsql;
 using ExamApi.Interface;
 using ExamApi.Responses;
 using ExamApi.DTOs;
+using Microsoft.EntityFrameworkCore;
 
 namespace ExamApi.Services;
 public class UserService(ApplicationDbContext dbContext,ILogger<User> _logger) : IUserService
@@ -21,18 +22,10 @@ public class UserService(ApplicationDbContext dbContext,ILogger<User> _logger) :
               FullName=user1.FullName,
               Email=user1.Email  
             };
-             using var conn = context.Connection();
-             var query="insert into users(fullname,email,registeredat) values(@fullname,@email,@registeredat) ";
-             var res = await conn.ExecuteAsync(query,new{fullname=user.FullName,email=user.Email,registeredat=user.RegisteredAt});
-             if (res==0)
-             {
-                logger.LogWarning("Can not added");
-               return new Response<string>(HttpStatusCode.InternalServerError,"Can not added");
-             }
-             else
-             {
+              context.Users.Add(user);
+              await context.SaveChangesAsync();
                return new Response<string>(HttpStatusCode.OK,"Added successfull");  
-             }
+             
          }
          catch (System.Exception ex)
             {
@@ -44,19 +37,10 @@ public class UserService(ApplicationDbContext dbContext,ILogger<User> _logger) :
     {
         try
          {
-             using var conn = context.Connection();
-             var query="delete from users where id=@Userid";
-             var res = await conn.ExecuteAsync(query,new{Userid=userid});
-             if (res==0)
-             {
-                logger.LogWarning("Can not delete author by id");
-               return new Response<string>(HttpStatusCode.InternalServerError,"Can not delete");
-             }
-             else
-             {
-              
+             var res = await context.Users.FindAsync(userid);
+             context.Users.Remove(res);
+             await context.SaveChangesAsync();
                return new Response<string>(HttpStatusCode.OK,"Delete successfull");  
-             }
              }
              catch (System.Exception ex)
             {
@@ -64,29 +48,16 @@ public class UserService(ApplicationDbContext dbContext,ILogger<User> _logger) :
              return new Response<string>(HttpStatusCode.InternalServerError,"Internal Server Error");
             }
     }
-    public async Task<List<User>> GetAsync()
+    public async Task<Response<List<User>>> GetAsync()
     {
-        using var conn = context.Connection();
-             var query="select * from users";
-             var res = await conn.QueryAsync<User>(query);
-             return  res.ToList();
+       return new Response<List<User>>(HttpStatusCode.OK,"ok",await context.Users.ToListAsync());
     }
     public async Task<Response<User>> GetByIdAsync(int userid)
     {
         try
          {
-             using var conn = context.Connection();
-             var query="select * from users where id=@Userid";
-             var res = await conn.QueryFirstOrDefaultAsync<User>(query,new{Userid=userid});
-             if(res==null)
-             {
-                logger.LogWarning("Can not found id");
-                return  new Response<User>(HttpStatusCode.NotFound,"Can not found");
-            }
-             else
-            {
-                return new Response<User>(HttpStatusCode.OK,"Get successfull",res);
-            }        
+               var res = await context.Users.FindAsync(userid);
+                return new Response<User>(HttpStatusCode.OK,"Get successfull",res);      
          }
          catch (System.Exception ex)
          {
@@ -94,22 +65,16 @@ public class UserService(ApplicationDbContext dbContext,ILogger<User> _logger) :
              return new Response<User>(HttpStatusCode.InternalServerError,"Internal Server Error");
          }
     }
-    public async Task<Response<string>> UpdateAsync(UpdateUserDto user)
+    public async Task<Response<string>> UpdateAsync(int userid,UpdateUserDto user)
     {
         try
          {
-             using var conn = context.Connection();
-             var query="update users set fullname=Fullname,email=Email,registeredat=Registeredat where id=@Id";
-             var res = await conn.ExecuteAsync(query, user);
-             if (res==0)
-             {
-                logger.LogWarning("Can not update author by id");
-               return new Response<string>(HttpStatusCode.InternalServerError,"Can not update");
-             }
-             else
-             {
+              var  userss = await context.Users.FindAsync(userid);  
+             userss.FullName=user.FullName;
+             userss.Email=user.Email;
+            await context.SaveChangesAsync();
                return new Response<string>(HttpStatusCode.OK,"Update successfull");  
-             }
+             
           }
              catch (System.Exception ex)
              {

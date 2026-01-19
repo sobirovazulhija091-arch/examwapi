@@ -1,7 +1,7 @@
-using ExamApi.Data;
+// using ExamApi.Data;
 using ExamApi.Entites;
 using ExamApi.Interface;
-using ExamApi.Services;
+// using ExamApi.Services;
 using ExamApi.Responses;
 using Microsoft.AspNetCore.Mvc;
 using ExamApi.DTOs;
@@ -22,7 +22,7 @@ public class BookServiceController(IBookService  bookService):ControllerBase
         return await bookService.DeleteAsync(bookid);
     }
     [HttpGet]
-    public  async Task<List<Book>> GetAsync()
+    public  async Task<Response<List<Book>>> GetAsync()
     {
         return await bookService.GetAsync();
     }
@@ -32,8 +32,8 @@ public class BookServiceController(IBookService  bookService):ControllerBase
         return await bookService.GetByIdAsync(bookid);
     }
     [HttpPut]
-    public async Task<Response<string>> UpdateAsync(UpdateBookDto book)
+    public async Task<Response<string>> UpdateAsync(int bookid,UpdateBookDto book)
     {
-        return await bookService.UpdateAsync(book);
+        return await bookService.UpdateAsync(bookid,book);
     }
 }

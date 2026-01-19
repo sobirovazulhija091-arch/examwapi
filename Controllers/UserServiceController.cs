@@ -1,7 +1,7 @@
-using ExamApi.Data;
+// using ExamApi.Data;
 using ExamApi.Entites;
 using ExamApi.Interface;
-using ExamApi.Services;
+// using ExamApi.Services;
 using ExamApi.Responses;
 using Microsoft.AspNetCore.Mvc;
 using ExamApi.DTOs;
@@ -22,7 +22,7 @@ public class UserServiceController(IUserService userService):ControllerBase
         return await userService.DeleteAsync(userid);
     }
     [HttpGet]
-    public async Task<List<User>> GetAsync()
+    public async Task<Response<List<User>>> GetAsync()
     {
         return await userService.GetAsync();
     }
@@ -32,8 +32,8 @@ public class UserServiceController(IUserService userService):ControllerBase
       return await userService.GetByIdAsync(userid);   
     }
     [HttpPut]
-     public async Task<Response<string>> UpdateAsync(UpdateUserDto user)
+     public async Task<Response<string>> UpdateAsync(int userid,UpdateUserDto user)
     {
-        return await userService.UpdateAsync(user);
+        return await userService.UpdateAsync(userid,user);
     }
 }

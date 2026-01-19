@@ -1,7 +1,7 @@
-using ExamApi.Data;
+// using ExamApi.Data;
 using ExamApi.Entites;
 using ExamApi.Interface;
-using ExamApi.Services;
+// using ExamApi.Services;
 using ExamApi.Responses;
 using ExamApi.DTOs;
 using Microsoft.AspNetCore.Mvc;
@@ -23,7 +23,7 @@ public class AuthorServiceController(IAuthorService authorService): ControllerBa
         return await authorService.DeleteAsync(authorid);
     }
     [HttpGet]
-     public async Task<List<Author>> GetAsync()
+     public async Task<Response<List<Author>>> GetAsync()
     {
         return await authorService.GetAsync();
     }
@@ -34,8 +34,8 @@ public class AuthorServiceController(IAuthorService authorService): ControllerBa
          return await authorService.GetByIdAsync(authorid);
     }
     [HttpPut]
-     public async Task<Response<string>> UpdateAsync(UpdateAuthorDto author)
+     public async Task<Response<string>> UpdateAsync(int authorid,UpdateAuthorDto author)
     {
-        return await authorService.UpdateAsync(author);
+        return await authorService.UpdateAsync(authorid,author);
     }
 }

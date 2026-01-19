@@ -1,13 +1,14 @@
 using ExamApi.Middlewares;
+using Microsoft.EntityFrameworkCore;
 using ExamApi.Interface;
-using ExamApi.Data;
 using ExamApi.Services;
+// using ExamApi.Services;
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddDbContext<ApplicationDbContext>(options=> options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<IAuthorService,AuthorService>();
 builder.Services.AddScoped<IBookService,BookService>();
 builder.Services.AddScoped<IUserService,UserService>();
 builder.Services.AddScoped<IBookloanService,BookloanService>();
-builder.Services.AddScoped<ApplicationDbContext>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -21,6 +22,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
   app.MapOpenApi();
-  app.UseMiddleware<RequestTimeMiddleware>();
-  app.MapControllers();
+  app.UseRouting();
+app.UseMiddleware<RequestTimeMiddleware>();
+app.MapControllers();
+
   app.Run();

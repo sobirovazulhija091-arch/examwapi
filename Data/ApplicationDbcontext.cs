@@ -1,8 +1,12 @@
+
+using Microsoft.EntityFrameworkCore;
 using Npgsql;
-namespace ExamApi.Data;
-public class ApplicationDbContext
+using ExamApi.Entites;
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options): DbContext(options)
 {
-   
-      private readonly string connString="Host=localhost;Port=5432;Database=exam;Username=postgres;Password=1234";
-      public NpgsqlConnection Connection()=> new NpgsqlConnection(connString);
-}
+    public DbSet<Author> Authors {get; set;}
+    public DbSet<User> Users {get; set;}
+    public DbSet<Book> Books {get; set;}
+    public DbSet<Bookloan> Bookloans {get; set;}
+
+}                                         

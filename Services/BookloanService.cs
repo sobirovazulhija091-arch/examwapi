@@ -1,4 +1,3 @@
-using ExamApi.Data;
 using System.Net;
 using ExamApi.Entites;
 using Dapper;
@@ -6,6 +5,7 @@ using Npgsql;
 using ExamApi.Interface;
 using ExamApi.Responses;
 using ExamApi.DTOs;
+using Microsoft.EntityFrameworkCore;
 
 namespace ExamApi.Services;
 public class BookloanService(ApplicationDbContext dbContext ,ILogger<Bookloan> _logger) : IBookloanService
@@ -20,20 +20,11 @@ public class BookloanService(ApplicationDbContext dbContext ,ILogger<Bookloan> _
                BookId=bookloan1.BookId  
             };
         try
-         {
-             using var conn = context.Connection();
-             var query="insert into bookloans(bookid,userid,loandate,returndate) values(@bookid,@userid,@loandate,@returndate) ";
-             var res = await conn.ExecuteAsync(query,new{bookid=bookloan.BookId,userid=bookloan.UserId,loandate=bookloan.LoanDate,returndate=bookloan.ReturnDate});
-            if (res==0)
-             {
-                logger.LogWarning("Can not add  by id");
-               return new Response<string>(HttpStatusCode.InternalServerError,"Can not add");
-             }
-             else
-             {
-              
+         {  
+             context.Bookloans.Add(bookloan);
+             await context.SaveChangesAsync();    
                return new Response<string>(HttpStatusCode.OK,"Added successfull");  
-             }
+             
          }
          catch (System.Exception ex)
          {
@@ -45,19 +36,10 @@ public class BookloanService(ApplicationDbContext dbContext ,ILogger<Bookloan> _
     {
         try
          {
-             using var conn = context.Connection();
-             var query="delete from bookloans where id=@Bookloanid";
-             var res = await conn.ExecuteAsync(query,new{Bookloanid=bookloanid});
-            if (res==0)
-             {
-                logger.LogWarning("Can not delete  by id");
-               return new Response<string>(HttpStatusCode.InternalServerError,"Can not delete");
-             }
-             else
-             {
-              
-               return new Response<string>(HttpStatusCode.OK,"Delete successfull");  
-             }
+               var bookloan = await context.Bookloans.FindAsync(bookloanid);
+              context.Bookloans.Remove(bookloan);
+               await context.SaveChangesAsync();
+               return new Response<string>(HttpStatusCode.OK,"Delete successfull");        
          }
          catch (System.Exception ex)
          {
@@ -65,30 +47,25 @@ public class BookloanService(ApplicationDbContext dbContext ,ILogger<Bookloan> _
              return new Response<string>(HttpStatusCode.InternalServerError,"Internal Server Error");
          }
     }
-    public async Task<List<Bookloan>> GetAsync()
+    public async Task<Response<List<Bookloan>>> GetAsync()
     {
-              using var conn = context.Connection();
-              var query="select * from bookloans";
-              var res = await conn.QueryAsync<Bookloan>(query);
-              return  res.ToList();
+        try
+        {
+             return new Response<List<Bookloan>>(HttpStatusCode.OK,"ok",await context.Bookloans.ToListAsync());
+        }
+        catch (System.Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            return new Response<List<Bookloan>>(HttpStatusCode.InternalServerError, $"Something went wrong!");
+        }
+              
     }
     public  async Task<Response<Bookloan>> GetByIdAsync(int bookloanid)
     {
         try
          {
-             using var conn = context.Connection();
-             var query="select * from bookloans where id=@Bookloanid";
-             var res = await conn.QueryFirstOrDefaultAsync<Bookloan>(query,new{Bookloanid=bookloanid});
-             if (res==null)
-             {
-                logger.LogWarning("Can not find  id");
-               return new Response<Bookloan>(HttpStatusCode.NotFound,"Can not find");
-             }
-             else
-             {
-              
-               return new Response<Bookloan>(HttpStatusCode.OK,"Get successfull");  
-             }
+            var loan = await context.Bookloans.FindAsync(bookloanid);
+            return new Response<Bookloan>(HttpStatusCode.OK,"oK",loan); 
          }
          catch (System.Exception ex)
          {
@@ -96,23 +73,18 @@ public class BookloanService(ApplicationDbContext dbContext ,ILogger<Bookloan> _
              return new Response<Bookloan>(HttpStatusCode.InternalServerError,"Internal Server Error");
          }
     }
-    public async Task<Response<string>> UpdateAsync(UpdateBookloanDto bookloan)
+    public async Task<Response<string>> UpdateAsync(int bookloanid,UpdateBookloanDto bookloan)
     {
          try
          {
-             using var conn = context.Connection();
-             var query="update bookloans set bookid=@Bookid,userid=@Userid,loandate=@Loandate,returndate=@Returndate where id=@Id";
-             var res = await conn.ExecuteAsync(query, bookloan);
-            if (res==0)
-             {
-                logger.LogWarning("Can not update  by id");
-               return new Response<string>(HttpStatusCode.InternalServerError,"Can not update");
-             }
-             else
-             {
-              
+             
+             var loan = await context.Bookloans.FindAsync(bookloanid);
+               loan.BookId=bookloan.BookId;
+               loan.UserId=bookloan.UserId;
+               loan.LoanDate=bookloan.LoanDate;
+               loan.ReturnDate=loan.ReturnDate; 
+               await context.SaveChangesAsync();
                return new Response<string>(HttpStatusCode.OK,"Update successfull");  
-             }
          }
          catch (System.Exception ex)
          {
@@ -123,20 +95,16 @@ public class BookloanService(ApplicationDbContext dbContext ,ILogger<Bookloan> _
     public async Task<Response<Bookloan>> ReturnAsync(int bookloanid)
     {
         try
-        {
-          using var conn = context.Connection();
-             var query="update bookloans set returndate = @ReturnDate where id=@Id";
-            var res = await conn.ExecuteAsync(query, new { ReturnDate = DateTime.UtcNow, Id = bookloanid });
-              if (res==0)
+        { 
+             var  loan= await context.Bookloans.FindAsync(bookloanid);
+
+              if (loan==null)
              {
-                logger.LogWarning("Can not return  ");
-               return new Response<Bookloan>(HttpStatusCode.InternalServerError,"Can not return date");
+               return new Response<Bookloan>(HttpStatusCode.NotFound,"Can not Find");
              }
-             else
-             {
-              
-               return new Response<Bookloan>(HttpStatusCode.OK,"Returned successfull");  
-             }   
+                 loan.ReturnDate=DateTime.UtcNow;
+                 await context.SaveChangesAsync();
+               return new Response<Bookloan>(HttpStatusCode.OK,"Returned successfull");    
         }  
          catch (System.Exception ex)
          {
