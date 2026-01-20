@@ -43,19 +43,21 @@ public class AuthorService(ApplicationDbContext dbContext,ILogger<Author> _logge
     {
       try
         {
-            return new Response<List<Author>>(HttpStatusCode.OK, "Ok", await context.Authors.ToListAsync());
+            var res = context.Authors.Include(a=>a.Books).ToList();
+            return new Response<List<Author>>(HttpStatusCode.OK, "Ok", res);
         }
         catch(Exception ex)
         {
             System.Console.WriteLine(ex);
             return new Response<List<Author>>(HttpStatusCode.InternalServerError, $"Something went wrong!");
         }
-    }
+ 
+   }
     public async Task<Response<Author>> GetByIdAsync(int authorid)
     {
          try
          {
-         var res = await context.Authors.FindAsync(authorid);
+          var res = context.Authors.Include(a => a.Books).First(a=>a.Id==authorid);
             return new Response<Author>(HttpStatusCode.OK, "Found successfully!", res);      
          }
          catch (System.Exception ex)

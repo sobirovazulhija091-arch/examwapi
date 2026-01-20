@@ -52,7 +52,8 @@ public class BookService(ApplicationDbContext dbContext,ILogger<Book> _logger) :
     {
           try
           {
-            return new Response<List<Book>>(HttpStatusCode.OK,"Ok", await context.Books.ToListAsync());
+            var res= context.Books.Include(a=>a.Bookloans).ToList();
+            return new Response<List<Book>>(HttpStatusCode.OK,"Ok", res);
           }
           catch (System.Exception ex)
           {
@@ -60,11 +61,11 @@ public class BookService(ApplicationDbContext dbContext,ILogger<Book> _logger) :
             return new Response<List<Book>>(HttpStatusCode.InternalServerError, $"Something went wrong!");
           }
     }
-        public  async Task<Response<Book>> GetByIdAsync(int bookid)
+     public  async Task<Response<Book>> GetByIdAsync(int bookid)
 {
           try
          {
-             var res = await context.Books.FindAsync(bookid);
+             var res =  context.Books.Include(a=>a.Bookloans).First(a=>a.Id==bookid);
              return new Response<Book>(HttpStatusCode.OK,"OK",res);
          }
          catch (System.Exception ex)
@@ -73,7 +74,7 @@ public class BookService(ApplicationDbContext dbContext,ILogger<Book> _logger) :
              return new Response<Book>(HttpStatusCode.InternalServerError,"Internal Server Error");
          }
 }
-    public async Task<Response<string>> UpdateAsync(int bookid,UpdateBookDto book)
+     public async Task<Response<string>> UpdateAsync(int bookid,UpdateBookDto book)
     {
          try
          {

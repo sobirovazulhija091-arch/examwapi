@@ -8,6 +8,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options=> options.UseNpgsql(
 builder.Services.AddScoped<IAuthorService,AuthorService>();
 builder.Services.AddScoped<IBookService,BookService>();
 builder.Services.AddScoped<IUserService,UserService>();
+builder.Services.AddScoped<IProfileService,ProfileService>();
 builder.Services.AddScoped<IBookloanService,BookloanService>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

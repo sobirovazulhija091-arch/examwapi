@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -10,9 +11,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ExamApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260120163650_Fixedentites")]
+    partial class Fixedentites
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -98,8 +101,6 @@ namespace ExamApi.Migrations
 
                     b.HasIndex("BookId");
 
-                    b.HasIndex("UserId");
-
                     b.ToTable("Bookloans");
                 });
 
@@ -169,15 +170,7 @@ namespace ExamApi.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ExamApi.Entites.User", "User")
-                        .WithMany("Bookloans")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Book");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ExamApi.Entites.Profile", b =>
@@ -203,8 +196,6 @@ namespace ExamApi.Migrations
 
             modelBuilder.Entity("ExamApi.Entites.User", b =>
                 {
-                    b.Navigation("Bookloans");
-
                     b.Navigation("Profile");
                 });
 #pragma warning restore 612, 618

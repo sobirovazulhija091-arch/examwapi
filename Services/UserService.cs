@@ -50,7 +50,8 @@ public class UserService(ApplicationDbContext dbContext,ILogger<User> _logger) :
     }
     public async Task<Response<List<User>>> GetAsync()
     {
-       return new Response<List<User>>(HttpStatusCode.OK,"ok",await context.Users.ToListAsync());
+       var res = await context.Users.Include(a=>a.Profile).ToListAsync();
+       return new Response<List<User>>(HttpStatusCode.OK,"ok",res);
     }
     public async Task<Response<User>> GetByIdAsync(int userid)
     {

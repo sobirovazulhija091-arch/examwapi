@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -10,9 +11,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ExamApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260120163811_Fix")]
+    partial class Fix
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -145,7 +148,12 @@ namespace ExamApi.Migrations
                     b.Property<DateTime>("RegisteredAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int?>("UserId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Users");
                 });
@@ -170,7 +178,7 @@ namespace ExamApi.Migrations
                         .IsRequired();
 
                     b.HasOne("ExamApi.Entites.User", "User")
-                        .WithMany("Bookloans")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -191,6 +199,13 @@ namespace ExamApi.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("ExamApi.Entites.User", b =>
+                {
+                    b.HasOne("ExamApi.Entites.User", null)
+                        .WithMany("Users")
+                        .HasForeignKey("UserId");
+                });
+
             modelBuilder.Entity("ExamApi.Entites.Author", b =>
                 {
                     b.Navigation("Books");
@@ -203,9 +218,9 @@ namespace ExamApi.Migrations
 
             modelBuilder.Entity("ExamApi.Entites.User", b =>
                 {
-                    b.Navigation("Bookloans");
-
                     b.Navigation("Profile");
+
+                    b.Navigation("Users");
                 });
 #pragma warning restore 612, 618
         }
