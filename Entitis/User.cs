@@ -1,11 +1,15 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace ExamApi.Entites;
  
  public class User
  {
+
  public int Id{get;set;}
+  [MaxLength(100),Required]
  public string FullName{get;set;}=null!;
+  [MaxLength(200),Required]
  public string Email{get;set;}=null!;
  public DateTime RegisteredAt{get;set;}=DateTime.UtcNow;
    [JsonIgnore]

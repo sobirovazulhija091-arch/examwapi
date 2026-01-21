@@ -61,7 +61,7 @@ public class BookService(ApplicationDbContext dbContext,ILogger<Book> _logger) :
             return new Response<List<Book>>(HttpStatusCode.InternalServerError, $"Something went wrong!");
           }
     }
-     public  async Task<Response<Book>> GetByIdAsync(int bookid)
+    public  async Task<Response<Book>> GetByIdAsync(int bookid)
 {
           try
          {
@@ -74,7 +74,7 @@ public class BookService(ApplicationDbContext dbContext,ILogger<Book> _logger) :
              return new Response<Book>(HttpStatusCode.InternalServerError,"Internal Server Error");
          }
 }
-     public async Task<Response<string>> UpdateAsync(int bookid,UpdateBookDto book)
+    public async Task<Response<string>> UpdateAsync(int bookid,UpdateBookDto book)
     {
          try
          {
@@ -94,5 +94,4 @@ public class BookService(ApplicationDbContext dbContext,ILogger<Book> _logger) :
                return new Response<string>(HttpStatusCode.InternalServerError,"Internal Server Error");
              }
     }
-
 }
